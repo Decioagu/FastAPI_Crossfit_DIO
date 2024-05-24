@@ -1,0 +1,14 @@
+# Ambiente Virtual
+    .\venv\Scripts\activate
+# subir contêiner  
+    docker-compose up -d
+# aplicação
+    uvicorn workout_api.main:app --reload
+
+# create-migrations:
+	alembic revision --autogenerate
+	alembic revision --autogenerate -m
+	alembic revision --autogenerate -m -d
+
+# run-migrations:
+	alembic upgrade head
