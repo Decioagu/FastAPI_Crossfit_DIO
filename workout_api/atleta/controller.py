@@ -2,14 +2,14 @@ from datetime import datetime
 from uuid import uuid4
 from fastapi import APIRouter, Body, HTTPException, status
 from pydantic import UUID4
+from fastapi_pagination import Page, paginate
+from workout_api.contrib.dependencies import DatabaseDependency
+from sqlalchemy.future import select
 
 from workout_api.atleta.schemas import AtletaIn, AtletaOut, AtletaUpdate
 from workout_api.atleta.models import AtletaModel
 from workout_api.categorias.models import CategoriaModel
 from workout_api.centro_treinamento.models import CentroTreinamentoModel
-
-from workout_api.contrib.dependencies import DatabaseDependency
-from sqlalchemy.future import select
 
 router = APIRouter()
 
@@ -66,14 +66,33 @@ async def post(
     '/',
     summary='Consultar todos os Atletas paginados',
     status_code=status.HTTP_200_OK,
-    response_model=list[AtletaOut],
+    response_model=Page[AtletaOut]
 )
-async def query(db_session: DatabaseDependency, skip: int = 0, limit: int = 1) -> list[AtletaOut]:
- 
-    atletas_query = select(AtletaModel)
-    atletas = (await db_session.execute(atletas_query.offset(skip).limit(limit))).scalars().all()
+async def query(db_session: DatabaseDependency) -> Page[AtletaOut]:
+    atletas:  Page[AtletaOut] = (await db_session.execute(select(AtletaModel))).scalars().all()
     
-    return [AtletaOut.model_validate(atleta) for atleta in atletas]
+    pagina = [AtletaOut.model_validate(atleta) for atleta in atletas]
+
+    return paginate(pagina)
+
+
+#----------------------------------------------------------------------------------------------
+# Outra opção de paginação sem o uso de módulo "fastapi_pagination"
+
+# @router.get(
+#     '/',
+#     summary='Consultar todos os Atletas paginados',
+#     status_code=status.HTTP_200_OK,
+#     response_model=list[AtletaOut],
+# )
+# async def query(db_session: DatabaseDependency, skip: int = 0, limit: int = 1) -> list[AtletaOut]:
+ 
+#     atletas_query = select(AtletaModel)
+#     atletas = (await db_session.execute(atletas_query.offset(skip).limit(limit))).scalars().all()
+    
+#     return [AtletaOut.model_validate(atleta) for atleta in atletas]
+
+#----------------------------------------------------------------------------------------------
 
 @router.get(
     '/{id}', 
