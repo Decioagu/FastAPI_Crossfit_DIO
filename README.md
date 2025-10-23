@@ -19,7 +19,7 @@ Esta é uma API de competição de crossfit chamada WorkoutAPI (isso mesmo rs, e
 
 A API foi desenvolvida utilizando o `fastapi` (async), junto das seguintes libs: `alembic`, `SQLAlchemy`, `pydantic`. Para salvar os dados está sendo utilizando o `postgres`, por meio do `docker`.
 
-## Execução da API
+### Execução da API
 
 Para executar utilizei gerenciador de pacote pip.
 
@@ -27,15 +27,22 @@ Para executar utilizei gerenciador de pacote pip.
 ```bash
 pip install -r requirements.txt
 ```
-Para subir o banco de dados, caso não tenha o [docker-compose](https://docs.docker.com/compose/install/linux/) instalado, faça a instalação e logo em seguida, execute:
+Para subir o banco de dados, caso não tenha o [docker-compose](https://docs.docker.com/compose/install/linux/) instalado, faça a instalação e logo em seguida, execute. Para o Windows é necessário esta instalado o [Docker Desktop](https://www.docker.com/products/docker-desktop/) e o mesmo estar em execução, apos isso execute o comado abaixo:
 
 ```bash
 docker-compose up -d
 ```
-Para criar uma migration nova, execute:
+
+Para remover compose:
 
 ```bash
-uvicorn workout_api.main:app --reload
+docker volume rm fastapi_db_data
+```
+
+Listar os containers em execução:
+
+```bash
+docker-compose ps
 ```
 
 Para criar o banco de dados, execute:
@@ -79,3 +86,36 @@ SQLAlchemy: https://docs.sqlalchemy.org/en/20/
 Alembic: https://alembic.sqlalchemy.org/en/latest/
 
 Fastapi-pagination: https://uriyyo-fastapi-pagination.netlify.app/
+
+### Estrutura banco de dados
+![Estrutura do banco de dados DBaever](<IMAGENS/Captura de tela 2024-05-24 095919.png>)
+
+### Tabela Atleta
+![Tabela Atleta](<IMAGENS/Captura de tela 2024-05-24 100048.png>)
+
+### Tabela Contro Treinamento
+![Tabela Centro Treinamento](<IMAGENS/Captura de tela 2024-05-24 100036.png>)
+
+### Tabela Categoria
+![Tabela Categoria](<IMAGENS/Captura de tela 2024-05-24 100022.png>)
+
+### Container Docker fastapi_crossfit_dio
+![Container Docker](<IMAGENS/Captura de tela 2024-05-24 100117.png>)
+
+### Terminal Api workout
+![Terminal Api workou](<IMAGENS/Captura de tela 2024-05-24 100229.png>)
+
+### Api workout docs
+![Api workout docs](<IMAGENS/Captura de tela 2024-05-24 100311.png>)
+
+### Api workout paginação
+![Api workout paginação](<IMAGENS/Captura de tela 2024-05-24 100335.png>)
+
+### Api workout get cpf
+![get cpf](<IMAGENS/Captura de tela 2024-05-24 100446.png>)
+
+### Api workout get nome
+![get nome](<IMAGENS/Captura de tela 2024-05-24 100500.png>)
+
+### Manipular exceção de integridade post atleta
+![Manipular exceção de integridade post atleta](<IMAGENS/Captura de tela 2024-05-24 100518.png>)
