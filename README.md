@@ -27,16 +27,10 @@ Para executar utilizei gerenciador de pacote pip.
 ```bash
 pip install -r requirements.txt
 ```
-Para subir o banco de dados, caso não tenha o [docker-compose](https://docs.docker.com/compose/install/linux/) instalado, faça a instalação e logo em seguida, execute. Para o Windows é necessário esta instalado o [Docker Desktop](https://www.docker.com/products/docker-desktop/) e o mesmo estar em execução, apos isso execute o comado abaixo:
+### Para o Windows é necessário esta instalado o [Docker Desktop](https://www.docker.com/products/docker-desktop/) e o mesmo estar em execução, apos isso execute o comado abaixo:
 
 ```bash
 docker-compose up -d
-```
-
-Para remover compose:
-
-```bash
-docker volume rm fastapi_db_data
 ```
 
 Listar os containers em execução:
