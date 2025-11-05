@@ -103,7 +103,7 @@ Fastapi-pagination: https://uriyyo-fastapi-pagination.netlify.app/
 ![alt text](IMAGENS/03_docker_volume.png)
 
 ### Execução alembic
-![alt text](IMAGENS/04_execucao_alembic.png)
+![alt text](IMAGENS/04_alembic.png)
 
 ### Estrutura banco de dados
 ![alt text](IMAGENS/05_banco_docker.png)
