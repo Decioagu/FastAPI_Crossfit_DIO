@@ -53,8 +53,13 @@ alembic upgrade head
 ```
 
 ## API
+O terminal:
+````
+docker ps -a
+docker start -ai fastapi_crossfit_dio-db-1
+````
 
-Para subir a API, execute:
+Abra outro terminal e execute instrução para subir a API:
 ```bash
 uvicorn workout_api.main:app --reload
 ```
@@ -190,30 +195,142 @@ async def get(nome: str, db_session: DatabaseDependency) -> AtletaOut:
     return atleta
 ````
 
-### WorkoutAPI docs exceção personalizado
-![alt text](IMAGENS/15_docs_exceção.png)
-![alt text](IMAGENS/16_docs_exceção.png)
 
+### WorkoutAPI docs - Personalização de exceção Post (tabela atletas)
 
-### Personalização de exceção Post (tabela atletas)
+- Se categoria não for encontrada
+![alt text](IMAGENS/15_docs_exceção_tabela_atletas_categoria.png)
 
 ````
-try:
-        # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios) 
-        atleta_out = AtletaOut(id=uuid4(), created_at=datetime.utcnow(), **atleta_in.model_dump())
-        atleta_model = AtletaModel(**atleta_out.model_dump(exclude={'categoria', 'centro_treinamento'}))
+# Verifica categoria
+    categoria = (await db_session.execute(
+        select(CategoriaModel).filter_by(nome=categoria_nome))
+    ).scalars().first()
+    
+    if not categoria:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f'A categoria {categoria_nome} não foi encontrada.'
+        )
+````
+- Se centro de treinamento não for encontrado
+![alt text](IMAGENS/16_docs_exceção_tabela_atletas_centros_treinamento.png)
 
-        atleta_model.categoria_id = categoria.pk_id
-        atleta_model.centro_treinamento_id = centro_treinamento.pk_id
+````
+# Verifica centro de treinamento
+    centro_treinamento = (await db_session.execute(
+        select(CentroTreinamentoModel).filter_by(nome=centro_treinamento_nome))
+    ).scalars().first()
+
+    
+    if not centro_treinamento:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f'O centro de treinamento {centro_treinamento_nome} não foi encontrado.'
+        )
+````
+
+- Se CPF já existir
+
+![alt text](IMAGENS/17_docs_exceção_tabela_atletas_cpf.png)
+
+````
+# Verifica se CPF já existe
+    cpf_existente = (await db_session.execute(
+        select(AtletaModel).filter_by(cpf=cpf_atleta))
+    ).scalars().first()
+
+    if cpf_existente:
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER, 
+            detail=f'Já existe um atleta cadastrado com o CPF: {cpf_atleta}.'
+        )
+````
+
+### WorkoutAPI docs - Personalização de exceção Post (tabela categorias)
+
+- Se nome da categoria já foi cadastrado
+![alt text](IMAGENS/18_docs_exceção_tabela_categoria.png)
+
+````
+async def post(
+    db_session: DatabaseDependency, 
+    categoria_in: CategoriaIn = Body(...)
+) -> CategoriaOut:
+    
+    categoria_nome = categoria_in.nome
+
+    # Verifica categoria
+    categoria = (await db_session.execute(
+        select(CategoriaModel).filter_by(nome=categoria_nome))
+    ).scalars().first()
+    
+    if categoria:
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            detail=f'A categoria {categoria_nome} ja foi cadastrada.'
+        )
+
+    try:
+        # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios)
+        categoria_out = CategoriaOut(id=uuid4(), **categoria_in.model_dump())
+        categoria_model = CategoriaModel(**categoria_out.model_dump())
         
-        db_session.add(atleta_model)
+        db_session.add(categoria_model)
+        await db_session.commit()   
+
+    except Exception as erro:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail= f'Já existe uma categoria cadastrada com o nome: {categoria_model.nome}. {erro.__class__}'
+        )
+
+    return categoria_out
+````
+
+### WorkoutAPI docs - Personalização de exceção Post (tabela centros_treinamento)
+
+- Se nome do centro de treinamento já foi cadastrado
+![alt text](IMAGENS/19_docs_exceção_tabela_centros_treinamento.png)
+
+````
+@router.post(
+    '/', 
+    summary='Criar um novo Centro de treinamento',
+    status_code=status.HTTP_201_CREATED,
+    response_model=CentroTreinamentoOut,
+)
+async def post(
+    db_session: DatabaseDependency, 
+    centro_treinamento_in: CentroTreinamentoIn = Body(...)
+) -> CentroTreinamentoOut:
+    
+    centro_treinamento_nome = centro_treinamento_in.nome
+
+    # Verifica centro de treinamento
+    centro_treinamento = (await db_session.execute(
+        select(CentroTreinamentoModel).filter_by(nome=centro_treinamento_nome))
+    ).scalars().first()
+    
+    if centro_treinamento:
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            detail=f'Centro de treinamento {centro_treinamento_nome} ja foi cadastrado.'
+        )
+
+    try:
+        # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios) 
+        centro_treinamento_out = CentroTreinamentoOut(id=uuid4(), **centro_treinamento_in.model_dump())
+        centro_treinamento_model = CentroTreinamentoModel(**centro_treinamento_out.model_dump())
+        
+        db_session.add(centro_treinamento_model)
         await db_session.commit()
         
     except Exception as erro:
         raise HTTPException(
-            status_code=status.HTTP_303_SEE_OTHER, 
-            detail= f'Já existe um atleta cadastrado com o cpf: {atleta_model.cpf}. {erro.__class__}'
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail= f'Já existe um centro de treinamento cadastrado com o nome: {centro_treinamento_model.nome}. {erro.__class__}'
         )
 
-    return atleta_out
+    return centro_treinamento_out
 ````

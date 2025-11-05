@@ -19,12 +19,33 @@ async def post(
     db_session: DatabaseDependency, 
     centro_treinamento_in: CentroTreinamentoIn = Body(...)
 ) -> CentroTreinamentoOut:
-    # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios) 
-    centro_treinamento_out = CentroTreinamentoOut(id=uuid4(), **centro_treinamento_in.model_dump())
-    centro_treinamento_model = CentroTreinamentoModel(**centro_treinamento_out.model_dump())
     
-    db_session.add(centro_treinamento_model)
-    await db_session.commit()
+    centro_treinamento_nome = centro_treinamento_in.nome
+
+    # Verifica centro de treinamento
+    centro_treinamento = (await db_session.execute(
+        select(CentroTreinamentoModel).filter_by(nome=centro_treinamento_nome))
+    ).scalars().first()
+    
+    if centro_treinamento:
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            detail=f'Centro de treinamento {centro_treinamento_nome} ja foi cadastrado.'
+        )
+
+    try:
+        # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios) 
+        centro_treinamento_out = CentroTreinamentoOut(id=uuid4(), **centro_treinamento_in.model_dump())
+        centro_treinamento_model = CentroTreinamentoModel(**centro_treinamento_out.model_dump())
+        
+        db_session.add(centro_treinamento_model)
+        await db_session.commit()
+        
+    except Exception as erro:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail= f'Já existe um centro de treinamento cadastrado com o nome: {centro_treinamento_model.nome}. {erro.__class__}'
+        )
 
     return centro_treinamento_out
     

@@ -25,7 +25,9 @@ async def post(
 ):
     categoria_nome = atleta_in.categoria.nome
     centro_treinamento_nome = atleta_in.centro_treinamento.nome
+    cpf_atleta = atleta_in.cpf
 
+    # Verifica categoria
     categoria = (await db_session.execute(
         select(CategoriaModel).filter_by(nome=categoria_nome))
     ).scalars().first()
@@ -36,18 +38,34 @@ async def post(
             detail=f'A categoria {categoria_nome} não foi encontrada.'
         )
     
+    # Verifica centro de treinamento
     centro_treinamento = (await db_session.execute(
         select(CentroTreinamentoModel).filter_by(nome=centro_treinamento_nome))
     ).scalars().first()
+
     
     if not centro_treinamento:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail=f'O centro de treinamento {centro_treinamento_nome} não foi encontrado.'
         )
+    
+       
+    # Verifica se CPF já existe
+    cpf_existente = (await db_session.execute(
+        select(AtletaModel).filter_by(cpf=cpf_atleta))
+    ).scalars().first()
+
+    if cpf_existente:
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER, 
+            detail=f'Já existe um atleta cadastrado com o CPF: {cpf_atleta}.'
+        )
+
     try:
         # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios) 
         atleta_out = AtletaOut(id=uuid4(), created_at=datetime.utcnow(), **atleta_in.model_dump())
+        # atleta_model = AtletaModel(**atleta_out.model_dump())
         atleta_model = AtletaModel(**atleta_out.model_dump(exclude={'categoria', 'centro_treinamento'}))
 
         atleta_model.categoria_id = categoria.pk_id
@@ -58,8 +76,8 @@ async def post(
         
     except Exception as erro:
         raise HTTPException(
-            status_code=status.HTTP_303_SEE_OTHER, 
-            detail= f'Já existe um atleta cadastrado com o cpf: {atleta_model.cpf}. {erro.__class__}'
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail='Ocorreu um erro ao inserir os dados no banco. {erro.__class__}'
         )
 
     return atleta_out

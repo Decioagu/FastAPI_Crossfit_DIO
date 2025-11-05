@@ -19,12 +19,33 @@ async def post(
     db_session: DatabaseDependency, 
     categoria_in: CategoriaIn = Body(...)
 ) -> CategoriaOut:
-    # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios)
-    categoria_out = CategoriaOut(id=uuid4(), **categoria_in.model_dump())
-    categoria_model = CategoriaModel(**categoria_out.model_dump())
     
-    db_session.add(categoria_model)
-    await db_session.commit()
+    categoria_nome = categoria_in.nome
+
+    # Verifica categoria
+    categoria = (await db_session.execute(
+        select(CategoriaModel).filter_by(nome=categoria_nome))
+    ).scalars().first()
+    
+    if categoria:
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            detail=f'A categoria {categoria_nome} ja foi cadastrada.'
+        )
+
+    try:
+        # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios)
+        categoria_out = CategoriaOut(id=uuid4(), **categoria_in.model_dump())
+        categoria_model = CategoriaModel(**categoria_out.model_dump())
+        
+        db_session.add(categoria_model)
+        await db_session.commit()   
+
+    except Exception as erro:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail= f'Já existe uma categoria cadastrada com o nome: {categoria_model.nome}. {erro.__class__}'
+        )
 
     return categoria_out
     
