@@ -46,6 +46,7 @@ async def post(
             detail=f'O centro de treinamento {centro_treinamento_nome} não foi encontrado.'
         )
     try:
+        # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios) 
         atleta_out = AtletaOut(id=uuid4(), created_at=datetime.utcnow(), **atleta_in.model_dump())
         atleta_model = AtletaModel(**atleta_out.model_dump(exclude={'categoria', 'centro_treinamento'}))
 
@@ -54,6 +55,7 @@ async def post(
         
         db_session.add(atleta_model)
         await db_session.commit()
+        
     except Exception as erro:
         raise HTTPException(
             status_code=status.HTTP_303_SEE_OTHER, 
@@ -62,35 +64,27 @@ async def post(
 
     return atleta_out
 
+
+#---------------------------------- PAGINAÇÃO ----------------------------------
+
+from fastapi import Query
+
 @router.get(
     '/',
     summary='Consultar todos os Atletas paginados',
     status_code=status.HTTP_200_OK,
-    response_model=Page[AtletaOut]
+    response_model=list[AtletaOut],
 )
-async def query(db_session: DatabaseDependency) -> Page[AtletaOut]:
-    atletas:  Page[AtletaOut] = (await db_session.execute(select(AtletaModel))).scalars().all()
-    
-    pagina = [AtletaOut.model_validate(atleta) for atleta in atletas]
-
-    return paginate(pagina)
-
-
-#----------------------------------------------------------------------------------------------
-# Outra opção de paginação sem o uso de módulo "fastapi_pagination"
-
-# @router.get(
-#     '/',
-#     summary='Consultar todos os Atletas paginados',
-#     status_code=status.HTTP_200_OK,
-#     response_model=list[AtletaOut],
-# )
-# async def query(db_session: DatabaseDependency, skip: int = 0, limit: int = 1) -> list[AtletaOut]:
+# Paginação
+async def query(db_session: DatabaseDependency, 
+                skip: int = Query(0, description="Número de registros a serem pulados (para paginação)"), 
+                limit: int = Query(2, description="Número máximo de registros retornados por página")
+                ) -> list[AtletaOut]:
  
-#     atletas_query = select(AtletaModel)
-#     atletas = (await db_session.execute(atletas_query.offset(skip).limit(limit))).scalars().all()
+    atletas_query = select(AtletaModel) #
+    atletas = (await db_session.execute(atletas_query.offset(skip).limit(limit))).scalars().all()
     
-#     return [AtletaOut.model_validate(atleta) for atleta in atletas]
+    return [AtletaOut.model_validate(atleta) for atleta in atletas]
 
 #----------------------------------------------------------------------------------------------
 

@@ -4,6 +4,7 @@ from workout_api.categorias.schemas import CategoriaIn
 from workout_api.centro_treinamento.schemas import CentroTreinamentoAtleta
 
 from workout_api.contrib.schemas import BaseSchema, OutMixin
+from pydantic import UUID4, Field
 
 
 class Atleta(BaseSchema):
@@ -22,7 +23,7 @@ class AtletaIn(Atleta):
 
 
 class AtletaOut(Atleta, OutMixin):
-    pass
+    id: Annotated[UUID4, Field(description='Identificador de atleta')] 
 
 class AtletaUpdate(BaseSchema):
     nome: Annotated[Optional[str], Field(None, description='Nome do atleta', example='Joao', max_length=50)]

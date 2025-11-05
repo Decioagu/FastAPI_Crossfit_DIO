@@ -19,6 +19,7 @@ async def post(
     db_session: DatabaseDependency, 
     categoria_in: CategoriaIn = Body(...)
 ) -> CategoriaOut:
+    # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios)
     categoria_out = CategoriaOut(id=uuid4(), **categoria_in.model_dump())
     categoria_model = CategoriaModel(**categoria_out.model_dump())
     
@@ -42,14 +43,17 @@ async def query(db_session: DatabaseDependency) -> list[CategoriaOut]:
 
 @router.get(
     '/{id}', 
-    summary='Consulta uma Categoria pelo id',
+    summary='Consulta uma Categoria pelo id UUID4',
     status_code=status.HTTP_200_OK,
     response_model=CategoriaOut,
 )
 async def get(id: UUID4, db_session: DatabaseDependency) -> CategoriaOut:
+    
+
     categoria: CategoriaOut = (
         await db_session.execute(select(CategoriaModel).filter_by(id=id))
     ).scalars().first()
+    print(id)
 
     if not categoria:
         raise HTTPException(

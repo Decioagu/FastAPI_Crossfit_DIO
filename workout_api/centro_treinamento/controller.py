@@ -19,6 +19,7 @@ async def post(
     db_session: DatabaseDependency, 
     centro_treinamento_in: CentroTreinamentoIn = Body(...)
 ) -> CentroTreinamentoOut:
+    # código id gerado automaticamente por biblioteca uuid4 (strings de 36 caracteres alfanuméricos aleatórios) 
     centro_treinamento_out = CentroTreinamentoOut(id=uuid4(), **centro_treinamento_in.model_dump())
     centro_treinamento_model = CentroTreinamentoModel(**centro_treinamento_out.model_dump())
     
@@ -44,7 +45,7 @@ async def query(db_session: DatabaseDependency) -> list[CentroTreinamentoOut]:
 
 @router.get(
     '/{id}', 
-    summary='Consulta um centro de treinamento pelo id',
+    summary='Consulta um centro de treinamento pelo id UUID4',
     status_code=status.HTTP_200_OK,
     response_model=CentroTreinamentoOut,
 )
