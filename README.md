@@ -94,31 +94,41 @@ Alembic: https://alembic.sqlalchemy.org/en/latest/
 Fastapi-pagination: https://uriyyo-fastapi-pagination.netlify.app/
 
 ### Dockes Imagem
+
 ![alt text](IMAGENS/01_docker_imagem.png)
 
 ### Docker Containe
+
 ![alt text](IMAGENS/02_docker_container.png)
 
 ### Docker Volume
+
 ![alt text](IMAGENS/03_docker_volume.png)
 
 ### Execução alembic
+
 ![alt text](IMAGENS/04_alembic.png)
 
 ### Estrutura banco de dados
+
 ![alt text](IMAGENS/05_banco_docker.png)
 
 ### Tabela Atletas
+
 ![alt text](IMAGENS/06_tabela_atletas.png)
 
 ### Tabela Categorias
+
 ![alt text](IMAGENS/07_tabela_categorias.png)
 
 ### Tabela Contros Treinamento
+
 ![alt text](IMAGENS/08_tabela_centros_treinamento.png)
 
 ### WorkoutAPI docs paginação
+
 ![alt text](IMAGENS/09_docs_paginação.png)
+
 ![alt text](IMAGENS/10_docs_paginação.png)
 
 ### Api workout paginação (tabela atletas)
@@ -144,7 +154,9 @@ async def query(db_session: DatabaseDependency,
 ````
 
 ### WorkoutAPI docs CPF
+
 ![alt text](IMAGENS/11-docs_cpf.png)
+
 ![alt text](IMAGENS/12-docs_cpf.png)
 
 ### Api workout get cpf (tabela atletas)
@@ -170,7 +182,9 @@ async def get_by_cpf(cpf: str, db_session: DatabaseDependency) -> AtletaOut:
 ````
 
 ### WorkoutAPI docs CPF
+
 ![alt text](IMAGENS/13_docs_nome.png)
+
 ![alt text](IMAGENS/14_docs_nome.png)
 
 ### Api workout get nome (tabela atletas)
@@ -199,6 +213,7 @@ async def get(nome: str, db_session: DatabaseDependency) -> AtletaOut:
 ### WorkoutAPI docs - Personalização de exceção Post (tabela atletas)
 
 - Se categoria não for encontrada
+
 ![alt text](IMAGENS/15_docs_exceção_tabela_atletas_categoria.png)
 
 ````
@@ -214,6 +229,7 @@ async def get(nome: str, db_session: DatabaseDependency) -> AtletaOut:
         )
 ````
 - Se centro de treinamento não for encontrado
+
 ![alt text](IMAGENS/16_docs_exceção_tabela_atletas_centros_treinamento.png)
 
 ````
@@ -250,6 +266,7 @@ async def get(nome: str, db_session: DatabaseDependency) -> AtletaOut:
 ### WorkoutAPI docs - Personalização de exceção Post (tabela categorias)
 
 - Se nome da categoria já foi cadastrado
+
 ![alt text](IMAGENS/18_docs_exceção_tabela_categoria.png)
 
 ````
@@ -291,6 +308,7 @@ async def post(
 ### WorkoutAPI docs - Personalização de exceção Post (tabela centros_treinamento)
 
 - Se nome do centro de treinamento já foi cadastrado
+
 ![alt text](IMAGENS/19_docs_exceção_tabela_centros_treinamento.png)
 
 ````
