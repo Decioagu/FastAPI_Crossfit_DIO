@@ -29,45 +29,41 @@ OBS: migrations controle de versão do esquema do banco de dados (criar, atualiz
 ### Execução da API
 
 Para executar utilizei gerenciador de pacote pip.
-
-
-```
-bash
+- No terminal execute:
+```bash
 pip install -r requirements.txt
 ```
 ### Para o Windows é necessário esta instalado o [Docker Desktop](https://www.docker.com/products/docker-desktop/) e o mesmo estar em execução, apos isso execute o comado abaixo:
 
-```
-bash
+- No terminal execute:
+```bash
 docker-compose up -d
 ```
 
 Listar os containers em execução:
-
-```
-bash
+- No terminal execute:
+```bash
 docker-compose ps
 ```
 
 Para criar o banco de dados, execute:
-
-```
-bash
+- No terminal execute:
+```bash
 alembic upgrade head
 ```
 
 ## API
 
 Com o Docker Desktop aberto, execute o comando abaixo:
-````
-bash
+- No terminal execute:
+````bash
 docker ps -a
 docker start -ai fastapi_crossfit_dio-db-1
 ````
 
 Abra outro terminal e execute instrução para subir a API:
-```
-bash
+- No terminal execute:
+```bash
 uvicorn workout_api.main:app --reload
 ```
 e acesse: http://127.0.0.1:8000/docs
