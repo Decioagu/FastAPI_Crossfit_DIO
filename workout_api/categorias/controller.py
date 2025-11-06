@@ -57,7 +57,11 @@ async def post(
     response_model=list[CategoriaOut],
 )
 async def query(db_session: DatabaseDependency) -> list[CategoriaOut]:
-    categorias: list[CategoriaOut] = (await db_session.execute(select(CategoriaModel))).scalars().all()
+
+    # Consulta de todas as categorias no banco de dados
+    categorias_query = select(CategoriaModel)
+    # Executa a consulta no banco de dados
+    categorias: list[CategoriaOut] = (await db_session.execute(categorias_query)).scalars().all()
     
     return categorias
 

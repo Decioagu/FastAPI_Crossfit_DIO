@@ -53,8 +53,9 @@ alembic upgrade head
 ```
 
 ## API
-O terminal:
-````
+
+Com o Docker Desktop aberto, execute o comando abaixo:
+````bash
 docker ps -a
 docker start -ai fastapi_crossfit_dio-db-1
 ````

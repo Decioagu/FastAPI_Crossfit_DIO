@@ -99,7 +99,9 @@ async def query(db_session: DatabaseDependency,
                 limit: int = Query(2, description="Número máximo de registros retornados por página")
                 ) -> list[AtletaOut]:
  
-    atletas_query = select(AtletaModel) #
+    # Consulta de todos os atletas no banco de dados
+    atletas_query = select(AtletaModel) 
+    # Executa a consulta no banco de dados
     atletas = (await db_session.execute(atletas_query.offset(skip).limit(limit))).scalars().all()
     
     return [AtletaOut.model_validate(atleta) for atleta in atletas]
