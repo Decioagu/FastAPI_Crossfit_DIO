@@ -93,45 +93,63 @@ Alembic: https://alembic.sqlalchemy.org/en/latest/
 
 Fastapi-pagination: https://uriyyo-fastapi-pagination.netlify.app/
 
+---
+
+<br><br>
+
+# Extra:  Imagens do projeto WorkoutAPI
+
+<br>
+
 ### Dockes Imagem
 
 ![alt text](IMAGENS/01_docker_imagem.png)
+---
+<br>
 
 ### Docker Containe
 
 ![alt text](IMAGENS/02_docker_container.png)
+---
+<br>
 
 ### Docker Volume
 
 ![alt text](IMAGENS/03_docker_volume.png)
+---
+<br>
 
 ### Execução alembic
 
 ![alt text](IMAGENS/04_alembic.png)
+---
+<br>
 
 ### Estrutura banco de dados
 
 ![alt text](IMAGENS/05_banco_docker.png)
+---
+<br>
 
 ### Tabela Atletas
 
 ![alt text](IMAGENS/06_tabela_atletas.png)
+---
+<br>
 
 ### Tabela Categorias
 
 ![alt text](IMAGENS/07_tabela_categorias.png)
+---
+<br>
 
-### Tabela Contros Treinamento
+### Tabela Centro de Treinamento
 
 ![alt text](IMAGENS/08_tabela_centros_treinamento.png)
+---
+<br>
 
-### WorkoutAPI docs paginação
-
-![alt text](IMAGENS/09_docs_paginação.png)
-
-![alt text](IMAGENS/10_docs_paginação.png)
-
-### Api workout paginação (tabela atletas)
+### WorkoutAPI - Paginação (tabela atletas)
 ````
 from fastapi import Query
 
@@ -147,19 +165,19 @@ async def query(db_session: DatabaseDependency,
                 limit: int = Query(2, description="Número máximo de registros retornados por página")
                 ) -> list[AtletaOut]:
  
-    atletas_query = select(AtletaModel) #
+    atletas_query = select(AtletaModel)
     atletas = (await db_session.execute(atletas_query.offset(skip).limit(limit))).scalars().all()
     
     return [AtletaOut.model_validate(atleta) for atleta in atletas]
 ````
 
-### WorkoutAPI docs CPF
+![alt text](IMAGENS/09_docs_paginação.png)
 
-![alt text](IMAGENS/11-docs_cpf.png)
+![alt text](IMAGENS/10_docs_paginação.png)
+---
+<br>
 
-![alt text](IMAGENS/12-docs_cpf.png)
-
-### Api workout get cpf (tabela atletas)
+### WorkoutAPI - Get por cpf (tabela atletas)
 ````
 @router.get(
     '/cpf/{cpf}',
@@ -180,14 +198,14 @@ async def get_by_cpf(cpf: str, db_session: DatabaseDependency) -> AtletaOut:
 
     return atleta
 ````
+![alt text](IMAGENS/11-docs_cpf.png)
 
-### WorkoutAPI docs CPF
+![alt text](IMAGENS/12-docs_cpf.png)
+---
+<br>
 
-![alt text](IMAGENS/13_docs_nome.png)
 
-![alt text](IMAGENS/14_docs_nome.png)
-
-### Api workout get nome (tabela atletas)
+### WorkoutAPI - Get por nome (tabela atletas)
 ````
 @router.get(
     '/nome/{nome}', 
@@ -208,14 +226,16 @@ async def get(nome: str, db_session: DatabaseDependency) -> AtletaOut:
     
     return atleta
 ````
+![alt text](IMAGENS/13_docs_nome.png)
+
+![alt text](IMAGENS/14_docs_nome.png)
+---
+<br>
+
+### WorkoutAPI - Resposta customizada por exceção em Post (tabela atletas)
 
 
-### WorkoutAPI docs - Personalização de exceção Post (tabela atletas)
-
-- Se categoria não for encontrada
-
-![alt text](IMAGENS/15_docs_exceção_tabela_atletas_categoria.png)
-
+- **Se categoria não for encontrada**
 ````
 # Verifica categoria
     categoria = (await db_session.execute(
@@ -228,10 +248,11 @@ async def get(nome: str, db_session: DatabaseDependency) -> AtletaOut:
             detail=f'A categoria {categoria_nome} não foi encontrada.'
         )
 ````
-- Se centro de treinamento não for encontrado
+![alt text](IMAGENS/15_docs_exceção_tabela_atletas_categoria.png)
 
-![alt text](IMAGENS/16_docs_exceção_tabela_atletas_centros_treinamento.png)
+<br>
 
+- **Se centro de treinamento não for encontrado**
 ````
 # Verifica centro de treinamento
     centro_treinamento = (await db_session.execute(
@@ -245,11 +266,11 @@ async def get(nome: str, db_session: DatabaseDependency) -> AtletaOut:
             detail=f'O centro de treinamento {centro_treinamento_nome} não foi encontrado.'
         )
 ````
+![alt text](IMAGENS/16_docs_exceção_tabela_atletas_centros_treinamento.png)
 
-- Se CPF já existir
+<br>
 
-![alt text](IMAGENS/17_docs_exceção_tabela_atletas_cpf.png)
-
+- **Se CPF já existir**
 ````
 # Verifica se CPF já existe
     cpf_existente = (await db_session.execute(
@@ -262,13 +283,13 @@ async def get(nome: str, db_session: DatabaseDependency) -> AtletaOut:
             detail=f'Já existe um atleta cadastrado com o CPF: {cpf_atleta}.'
         )
 ````
+![alt text](IMAGENS/17_docs_exceção_tabela_atletas_cpf.png)
+---
+<br>
 
-### WorkoutAPI docs - Personalização de exceção Post (tabela categorias)
+### WorkoutAPI - Resposta customizada por exceção em Post (tabela categorias)
 
-- Se nome da categoria já foi cadastrado
-
-![alt text](IMAGENS/18_docs_exceção_tabela_categoria.png)
-
+- **Se nome da categoria já foi cadastrado**
 ````
 async def post(
     db_session: DatabaseDependency, 
@@ -304,13 +325,13 @@ async def post(
 
     return categoria_out
 ````
+![alt text](IMAGENS/18_docs_exceção_tabela_categoria.png)
+---
+<br>
 
-### WorkoutAPI docs - Personalização de exceção Post (tabela centros_treinamento)
+### WorkoutAPI - Resposta customizada por exceção em Post (tabela centros_treinamento)
 
-- Se nome do centro de treinamento já foi cadastrado
-
-![alt text](IMAGENS/19_docs_exceção_tabela_centros_treinamento.png)
-
+- **Se nome do centro de treinamento já foi cadastrado**
 ````
 @router.post(
     '/', 
@@ -352,3 +373,4 @@ async def post(
 
     return centro_treinamento_out
 ````
+![alt text](IMAGENS/19_docs_exceção_tabela_centros_treinamento.png)
